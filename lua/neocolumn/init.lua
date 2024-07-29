@@ -2,39 +2,43 @@ local config = require("neocolumn.config")
 local colors = require("neocolumn.colors")
 
 local function get_neighbouring_diagnostics(line, lines_with_diagnostics)
-    local max_severity_diagnostic
+    local max_severity_diagnostic = { math.huge, math.huge }
+
     if lines_with_diagnostics[line - 1] then
-        if max_severity_diagnostic and
-            lines_with_diagnostics[line - 1] < max_severity_diagnostic[2]
+        if lines_with_diagnostics[line - 1] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 1, lines_with_diagnostics[line - 1] }
         end
     end
     if lines_with_diagnostics[line + 1] then
-        if max_severity_diagnostic and
-            lines_with_diagnostics[line + 1] < max_severity_diagnostic[2]
+        if lines_with_diagnostics[line + 1] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 1, lines_with_diagnostics[line + 1] }
         end
     end
     if lines_with_diagnostics[line - 2] then
-        if max_severity_diagnostic and
-            max_severity_diagnostic[1] > 1 and
+        if max_severity_diagnostic[1] > 1 and
             lines_with_diagnostics[line - 2] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 2, lines_with_diagnostics[line - 2] }
         end
     end
     if lines_with_diagnostics[line + 2] then
-        if max_severity_diagnostic and
-            max_severity_diagnostic[1] > 1 and
+        if max_severity_diagnostic[1] > 1 and
             lines_with_diagnostics[line + 2] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 2, lines_with_diagnostics[line + 2] }
         end
     end
 
-    return max_severity_diagnostic
+    if max_severity_diagnostic[1] == math.huge and max_severity_diagnostic[2] == math.huge then
+        return nil
+    else
+        if line == 10 then
+            print(vim.inspect(max_severity_diagnostic))
+        end
+        return max_severity_diagnostic
+    end
 end
 
 local M = {}
