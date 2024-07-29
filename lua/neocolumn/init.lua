@@ -1,4 +1,19 @@
 local config = require("neocolumn.config")
+local colors = require("neocolumn.colors")
+
+local function get_neighbouring_diagnostics(line, lines_with_diagnostics)
+    if lines_with_diagnostics[line - 1] then
+        return { 1, lines_with_diagnostics[line - 1] }
+    elseif lines_with_diagnostics[line + 1] then
+        return { 1, lines_with_diagnostics[line + 1] }
+    elseif lines_with_diagnostics[line - 2] then
+        return { 2, lines_with_diagnostics[line - 2] }
+    elseif lines_with_diagnostics[line + 2] then
+        return { 2, lines_with_diagnostics[line + 2] }
+    else
+        return nil
+    end
+end
 
 local M = {}
 
@@ -6,6 +21,11 @@ local M = {}
 ---@param opts Config Configuration options
 function M.setup(opts)
     config.set(opts or {})
+
+    local ns = vim.api.nvim_create_namespace("neocolumn")
+    vim.api.nvim_set_hl_ns(ns)
+
+    colors.set_colors(config.opts.colors, ns)
 
     local ids = {}
 
@@ -20,8 +40,6 @@ function M.setup(opts)
         "ModeChanged"
     }, {
         callback = function(event)
-            local ns = vim.api.nvim_create_namespace("neocolumn")
-
             local filetype = vim.bo.filetype
             if vim.tbl_contains(config.opts.exclude_filetypes, filetype) then
                 if ids[event.buf] then
@@ -56,7 +74,12 @@ function M.setup(opts)
 
             for i = 1, vim.api.nvim_buf_line_count(0) + 1 do
                 if i <= vim.api.nvim_buf_line_count(0) then
-                    if vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]:len() > config.opts.max_line_length then
+                    if vim.api.nvim_buf_get_lines(
+                        0,
+                        i - 1,
+                        i,
+                        false
+                    )[1]:len() > config.opts.max_line_length then
                         if ids[event.buf] then
                             if ids[event.buf][i] then
                                 vim.api.nvim_buf_del_extmark(0, ns, ids[event.buf][i])
@@ -70,14 +93,37 @@ function M.setup(opts)
                 local hl = "Neocolumn"
                 if config.opts.diagnostics then
                     if lines_with_diagnostics[i] then
-                        if lines_with_diagnostics[i] == vim.diagnostic.severity.ERROR then
+                        if lines_with_diagnostics[i] == 1 then
                             hl = "NeocolumnError"
-                        elseif lines_with_diagnostics[i] == vim.diagnostic.severity.WARN then
+                        elseif lines_with_diagnostics[i] == 2 then
                             hl = "NeocolumnWarn"
-                        elseif lines_with_diagnostics[i] == vim.diagnostic.severity.INFO then
+                        elseif lines_with_diagnostics[i] == 3 then
                             hl = "NeocolumnInfo"
-                        elseif lines_with_diagnostics[i] == vim.diagnostic.severity.HINT then
+                        elseif lines_with_diagnostics[i] == 4 then
                             hl = "NeocolumnHint"
+                        end
+                    else
+                        local neighbouring_diagnostics = get_neighbouring_diagnostics(
+                            i,
+                            lines_with_diagnostics
+                        )
+
+                        if neighbouring_diagnostics then
+                            if neighbouring_diagnostics[2] == 1 then
+                                hl = "NeocolumnError"
+                            elseif neighbouring_diagnostics[2] == 2 then
+                                hl = "NeocolumnWarn"
+                            elseif neighbouring_diagnostics[2] == 3 then
+                                hl = "NeocolumnInfo"
+                            elseif neighbouring_diagnostics[2] == 4 then
+                                hl = "NeocolumnHint"
+                            end
+
+                            if neighbouring_diagnostics[1] == 1 then
+                                hl = hl .. "Near"
+                            else
+                                hl = hl .. "Far"
+                            end
                         end
                     end
                 end
@@ -85,14 +131,37 @@ function M.setup(opts)
                     hl = "NeocolumnCursor"
                     if config.opts.diagnostics then
                         if lines_with_diagnostics[i] then
-                            if lines_with_diagnostics[i] == vim.diagnostic.severity.ERROR then
+                            if lines_with_diagnostics[i] == 1 then
                                 hl = "NeocolumnCursorError"
-                            elseif lines_with_diagnostics[i] == vim.diagnostic.severity.WARN then
+                            elseif lines_with_diagnostics[i] == 2 then
                                 hl = "NeocolumnCursorWarn"
-                            elseif lines_with_diagnostics[i] == vim.diagnostic.severity.INFO then
+                            elseif lines_with_diagnostics[i] == 3 then
                                 hl = "NeocolumnCursorInfo"
-                            elseif lines_with_diagnostics[i] == vim.diagnostic.severity.HINT then
+                            elseif lines_with_diagnostics[i] == 4 then
                                 hl = "NeocolumnCursorHint"
+                            end
+                        else
+                            local neighbouring_diagnostics = get_neighbouring_diagnostics(
+                                i,
+                                lines_with_diagnostics
+                            )
+
+                            if neighbouring_diagnostics then
+                                if neighbouring_diagnostics[2] == 1 then
+                                    hl = "NeocolumnCursorError"
+                                elseif neighbouring_diagnostics[2] == 2 then
+                                    hl = "NeocolumnCursorWarn"
+                                elseif neighbouring_diagnostics[2] == 3 then
+                                    hl = "NeocolumnCursorInfo"
+                                elseif neighbouring_diagnostics[2] == 4 then
+                                    hl = "NeocolumnCursorHint"
+                                end
+
+                                if neighbouring_diagnostics[1] == 1 then
+                                    hl = hl .. "Near"
+                                elseif neighbouring_diagnostics[1] == 2 then
+                                    hl = hl .. "Far"
+                                end
                             end
                         end
                     end

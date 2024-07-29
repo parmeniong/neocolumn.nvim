@@ -9,6 +9,23 @@ local M = {}
 ---right after the last column of the maximum line length.
 
 M.defaults = {
+    colors = {
+        normal = "#7d7d7d",
+        error = "#db4b4b",
+        error_near = "#7c343a",
+        error_far = "#4b2830",
+        warn = "#e0af68",
+        warn_near = "#7e6647",
+        warn_far = "#4c4137",
+        info = "#0db9d7",
+        info_near = "#146b80",
+        info_far = "#184454",
+        hint = "#1abc9c",
+        hint_near = "#1b6c62",
+        hint_far = "#1b4444",
+        bg = "#303030",
+        cursor_bg = "#4d4d4d"
+    },
     exclude_filetypes = {
         "help",
         "man"
