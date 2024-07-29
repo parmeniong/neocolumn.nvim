@@ -1,6 +1,6 @@
 <div align="center">
     <h1>neocolumn.nvim</h1>
-    <img src="https://img.shields.io/badge/version-v2.0.0-8A2BE2" />
+    <img src="https://img.shields.io/badge/version-v2.0.1-8A2BE2" />
     <img src="https://img.shields.io/badge/license-MIT-blue" />
 </div>
 
