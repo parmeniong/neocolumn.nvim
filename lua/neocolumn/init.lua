@@ -17,6 +17,10 @@ end
 
 local M = {}
 
+DrawNormal = {}
+Ids = {}
+LinesWithDiagnostics = {}
+
 function M.setup(opts)
     config.set(opts or {})
 
@@ -24,8 +28,6 @@ function M.setup(opts)
     vim.api.nvim_set_hl_ns(ns)
 
     colors.set_colors(config.opts.colors, ns)
-
-    local ids = {}
 
     vim.api.nvim_create_autocmd({
         "BufEnter",
@@ -38,13 +40,15 @@ function M.setup(opts)
         "ModeChanged"
     }, {
         callback = function(event)
+            local start = os.clock()
+
             local filetype = vim.bo.filetype
             if vim.tbl_contains(config.opts.exclude_filetypes, filetype) then
-                if ids[event.buf] then
-                    for _, id in pairs(ids[event.buf]) do
+                if Ids[event.buf] then
+                    for _, id in pairs(Ids[event.buf]) do
                         vim.api.nvim_buf_del_extmark(0, ns, id)
                     end
-                    ids[event.buf] = nil
+                    Ids[event.buf] = nil
                 end
                 return
             end
@@ -53,29 +57,37 @@ function M.setup(opts)
                 return
             end
 
-            local draw_normal = true
-            if config.opts.max_distance ~= 0 then
-                local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
-                draw_normal = vim.api.nvim_buf_get_lines(
-                    0,
-                    cursor_line - 1,
-                    cursor_line,
-                    false
-                )[1]:len() >= config.opts.max_line_length - config.opts.max_distance
+            if not DrawNormal[event.buf] then
+                if config.opts.max_distance ~= 0 then
+                    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+                    DrawNormal[event.buf] = vim.api.nvim_buf_get_lines(
+                        0,
+                        cursor_line - 1,
+                        cursor_line,
+                        false
+                    )[1]:len() >= config.opts.max_line_length - config.opts.max_distance
+                else
+                    DrawNormal[event.buf] = 0
+                end
             end
 
-            local lines_with_diagnostics
-            if config.opts.diagnostics then
-                local diagnostics = vim.diagnostic.get(0)
-                lines_with_diagnostics = {}
-                for _, v in pairs(diagnostics) do
-                    if v.severity <= config.opts.min_diagnostic_severity then
-                        if lines_with_diagnostics[v.lnum + 1] then
-                            if v.severity < lines_with_diagnostics[v.lnum + 1] then
-                                lines_with_diagnostics[v.lnum + 1] = v.severity
+            if not LinesWithDiagnostics[event.buf] then
+                LinesWithDiagnostics[event.buf] = {}
+            end
+
+            if event.event == "DiagnosticChanged" then
+                if config.opts.diagnostics then
+                    local diagnostics = vim.diagnostic.get(0)
+                    LinesWithDiagnostics[event.buf] = {}
+                    for _, v in pairs(diagnostics) do
+                        if v.severity <= config.opts.min_diagnostic_severity then
+                            if LinesWithDiagnostics[event.buf][v.lnum + 1] then
+                                if v.severity < LinesWithDiagnostics[event.buf][v.lnum + 1] then
+                                    LinesWithDiagnostics[event.buf][v.lnum + 1] = v.severity
+                                end
+                            else
+                                LinesWithDiagnostics[event.buf][v.lnum + 1] = v.severity
                             end
-                        else
-                            lines_with_diagnostics[v.lnum + 1] = v.severity
                         end
                     end
                 end
@@ -89,70 +101,34 @@ function M.setup(opts)
                         i,
                         false
                     )[1]:len() > config.opts.max_line_length then
-                        if ids[event.buf] then
-                            if ids[event.buf][i] then
-                                vim.api.nvim_buf_del_extmark(0, ns, ids[event.buf][i])
-                                table.remove(ids[event.buf], i)
+                        if Ids[event.buf] then
+                            if Ids[event.buf][i] then
+                                vim.api.nvim_buf_del_extmark(0, ns, Ids[event.buf][i])
+                                table.remove(Ids[event.buf], i)
                                 goto continue
                             end
                         end
                     end
                 end
 
-                local hl = "Neocolumn"
-                if config.opts.diagnostics then
-                    if lines_with_diagnostics[i] then
-                        if lines_with_diagnostics[i] == 1 then
-                            hl = "NeocolumnError"
-                        elseif lines_with_diagnostics[i] == 2 then
-                            hl = "NeocolumnWarn"
-                        elseif lines_with_diagnostics[i] == 3 then
-                            hl = "NeocolumnInfo"
-                        elseif lines_with_diagnostics[i] == 4 then
-                            hl = "NeocolumnHint"
-                        end
-                    else
-                        local neighbouring_diagnostics = get_neighbouring_diagnostics(
-                            i,
-                            lines_with_diagnostics
-                        )
-
-                        if neighbouring_diagnostics then
-                            if neighbouring_diagnostics[2] == 1 then
-                                hl = "NeocolumnError"
-                            elseif neighbouring_diagnostics[2] == 2 then
-                                hl = "NeocolumnWarn"
-                            elseif neighbouring_diagnostics[2] == 3 then
-                                hl = "NeocolumnInfo"
-                            elseif neighbouring_diagnostics[2] == 4 then
-                                hl = "NeocolumnHint"
-                            end
-
-                            if neighbouring_diagnostics[1] == 1 then
-                                hl = hl .. "Near"
-                            else
-                                hl = hl .. "Far"
-                            end
-                        end
-                    end
-                end
+                local hl
                 if i == vim.api.nvim_win_get_cursor(0)[1] then
                     hl = "NeocolumnCursor"
                     if config.opts.diagnostics then
-                        if lines_with_diagnostics[i] then
-                            if lines_with_diagnostics[i] == 1 then
+                        if LinesWithDiagnostics[event.buf][i] then
+                            if LinesWithDiagnostics[event.buf][i] == 1 then
                                 hl = "NeocolumnCursorError"
-                            elseif lines_with_diagnostics[i] == 2 then
+                            elseif LinesWithDiagnostics[event.buf][i] == 2 then
                                 hl = "NeocolumnCursorWarn"
-                            elseif lines_with_diagnostics[i] == 3 then
+                            elseif LinesWithDiagnostics[event.buf][i] == 3 then
                                 hl = "NeocolumnCursorInfo"
-                            elseif lines_with_diagnostics[i] == 4 then
+                            elseif LinesWithDiagnostics[event.buf][i] == 4 then
                                 hl = "NeocolumnCursorHint"
                             end
                         else
                             local neighbouring_diagnostics = get_neighbouring_diagnostics(
                                 i,
-                                lines_with_diagnostics
+                                LinesWithDiagnostics[event.buf]
                             )
 
                             if neighbouring_diagnostics then
@@ -174,26 +150,66 @@ function M.setup(opts)
                             end
                         end
                     end
+                else
+                    hl = "Neocolumn"
+                    if config.opts.diagnostics then
+                        if LinesWithDiagnostics[event.buf][i] then
+                            if LinesWithDiagnostics[event.buf][i] == 1 then
+                                hl = "NeocolumnError"
+                            elseif LinesWithDiagnostics[event.buf][i] == 2 then
+                                hl = "NeocolumnWarn"
+                            elseif LinesWithDiagnostics[event.buf][i] == 3 then
+                                hl = "NeocolumnInfo"
+                            elseif LinesWithDiagnostics[event.buf][i] == 4 then
+                                hl = "NeocolumnHint"
+                            end
+                        else
+                            local neighbouring_diagnostics = get_neighbouring_diagnostics(
+                                i,
+                                LinesWithDiagnostics[event.buf]
+                            )
+
+                            if neighbouring_diagnostics then
+                                if neighbouring_diagnostics[2] == 1 then
+                                    hl = "NeocolumnError"
+                                elseif neighbouring_diagnostics[2] == 2 then
+                                    hl = "NeocolumnWarn"
+                                elseif neighbouring_diagnostics[2] == 3 then
+                                    hl = "NeocolumnInfo"
+                                elseif neighbouring_diagnostics[2] == 4 then
+                                    hl = "NeocolumnHint"
+                                end
+
+                                if neighbouring_diagnostics[1] == 1 then
+                                    hl = hl .. "Near"
+                                else
+                                    hl = hl .. "Far"
+                                end
+                            end
+                        end
+                    end
                 end
 
                 local char = config.opts.character
-                if not draw_normal and (hl == "Neocolumn" or hl == "NeocolumnCursor") then
+                if not DrawNormal[event.buf] == 0 and
+                    (hl == "Neocolumn" or hl == "NeocolumnCursor")
+                then
                     char = " "
                 end
 
-                if not ids[event.buf] then
-                    ids[event.buf] = {}
+                if not Ids[event.buf] then
+                    Ids[event.buf] = {}
                 end
 
-                if ids[event.buf][i] then
-                    ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
-                        id = ids[event.buf][i],
+                if Ids[event.buf][i] then
+                    Ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
+                        id = Ids[event.buf][i],
                         virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
                     })
                 else
-                    ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
+                    Ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
                         virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
@@ -202,6 +218,8 @@ function M.setup(opts)
 
                 ::continue::
             end
+
+            print((os.clock() - start) * 1000)
         end
     })
 end
