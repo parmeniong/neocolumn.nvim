@@ -1,12 +1,14 @@
 <div align="center">
     <h1>neocolumn.nvim</h1>
-    <img src="https://img.shields.io/badge/version-v2.1.2-8A2BE2" />
+    <img src="https://img.shields.io/badge/version-v2.1.3-8A2BE2" />
     <img src="https://img.shields.io/badge/license-MIT-blue" />
 </div>
 
 **neocolumn.nvim** is a replacement for Neovim's builtin `colorcolumn`
 
-![sample screenshot](https://github.com/user-attachments/assets/5a6bd46b-2aba-4b2e-b599-21ee7b8d8ead)
+![sample screenshot](
+    https://github.com/user-attachments/assets/5a6bd46b-2aba-4b2e-b599-21ee7b8d8ead
+)
 
 ### Table of contents
 

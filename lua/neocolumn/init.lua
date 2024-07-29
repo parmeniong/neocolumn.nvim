@@ -2,37 +2,39 @@ local config = require("neocolumn.config")
 local colors = require("neocolumn.colors")
 
 local function get_neighbouring_diagnostics(line, lines_with_diagnostics)
-    local max_severity_diagnostic = { math.huge, math.huge }
+    local max_severity_diagnostic
     if lines_with_diagnostics[line - 1] then
-        if lines_with_diagnostics[line - 1] < max_severity_diagnostic[2] then
+        if max_severity_diagnostic and
+            lines_with_diagnostics[line - 1] < max_severity_diagnostic[2]
+        then
             max_severity_diagnostic = { 1, lines_with_diagnostics[line - 1] }
         end
     end
     if lines_with_diagnostics[line + 1] then
-        if lines_with_diagnostics[line + 1] < max_severity_diagnostic[2] then
+        if max_severity_diagnostic and
+            lines_with_diagnostics[line + 1] < max_severity_diagnostic[2]
+        then
             max_severity_diagnostic = { 1, lines_with_diagnostics[line + 1] }
         end
     end
     if lines_with_diagnostics[line - 2] then
-        if max_severity_diagnostic[1] > 1 and
+        if max_severity_diagnostic and
+            max_severity_diagnostic[1] > 1 and
             lines_with_diagnostics[line - 2] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 2, lines_with_diagnostics[line - 2] }
         end
     end
     if lines_with_diagnostics[line + 2] then
-        if max_severity_diagnostic[1] > 1 and
+        if max_severity_diagnostic and
+            max_severity_diagnostic[1] > 1 and
             lines_with_diagnostics[line + 2] < max_severity_diagnostic[2]
         then
             max_severity_diagnostic = { 2, lines_with_diagnostics[line + 2] }
         end
     end
 
-    if max_severity_diagnostic == { math.huge, math.huge } then
-        return nil
-    else
-        return max_severity_diagnostic
-    end
+    return max_severity_diagnostic
 end
 
 local M = {}
@@ -60,8 +62,6 @@ function M.setup(opts)
         "ModeChanged"
     }, {
         callback = function(event)
-            local start = os.clock()
-
             local filetype = vim.bo.filetype
             if vim.tbl_contains(config.opts.exclude_filetypes, filetype) then
                 if Ids[event.buf] then
@@ -238,8 +238,6 @@ function M.setup(opts)
 
                 ::continue::
             end
-
-            print((os.clock() - start) * 1000)
         end
     })
 end
