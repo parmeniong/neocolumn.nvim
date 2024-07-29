@@ -17,8 +17,6 @@ end
 
 local M = {}
 
----Configure neocolumn.nvim
----@param opts Config Configuration options
 function M.setup(opts)
     config.set(opts or {})
 
@@ -174,13 +172,13 @@ function M.setup(opts)
                 if ids[event.buf][i] then
                     ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
                         id = ids[event.buf][i],
-                        virt_text = { { "│", hl } },
+                        virt_text = { { config.opts.character, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
                     })
                 else
                     ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
-                        virt_text = { { "│", hl } },
+                        virt_text = { { config.opts.character, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
                     })

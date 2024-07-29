@@ -1,6 +1,6 @@
 <div align="center">
     <h1>neocolumn.nvim</h1>
-    <img src="https://img.shields.io/badge/version-v2.0.1-8A2BE2" />
+    <img src="https://img.shields.io/badge/version-v2.0.2-8A2BE2" />
     <img src="https://img.shields.io/badge/license-MIT-blue" />
 </div>
 
@@ -84,6 +84,8 @@ Here are the available options and their default values:
     -- If `diagnostics` is `true` then diagnostic with a severity lower than this will be ignored
     min_diagnostic_severity = vim.diagnostic.severity.HINT,
     -- The maximum allowed length for a line. The neocolumn will be placed one column to the right
-    max_line_length = 100
+    max_line_length = 100,
+    -- The character use as the neocolumn
+    character = "│"
 }
 ```
