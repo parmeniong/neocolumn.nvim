@@ -1,25 +1,25 @@
 <div align="center">
     <h1>neocolumn.nvim</h1>
-    <img src="https://img.shields.io/badge/version-v1.0.0-8A2BE2" />
+    <img src="https://img.shields.io/badge/version-v2.0.0-8A2BE2" />
     <img src="https://img.shields.io/badge/license-MIT-blue" />
 </div>
 
 **neocolumn.nvim** is a replacement for Neovim's builtin `colorcolumn`
 
-![sample screenshot](https://github.com/user-attachments/assets/cbe0e6c8-ce19-4dbf-b34f-f769774a1d94)
+![sample screenshot](https://github.com/user-attachments/assets/5a6bd46b-2aba-4b2e-b599-21ee7b8d8ead)
 
 ### Table of contents
 
 * [Features](#features)
 * [Installation](#installation)
 * [Configuration](#configuration)
-* [Highlighting](#highlighting)
 
 ## Features
 
 * Blazingly fast
 * Diagnostics integration
 * Use custom character for colorcolumn
+* Modern style and look
 
 ## Installation
 
@@ -52,10 +52,28 @@ require("neocolumn").setup({})
 ```
 
 Instead of an empty table you can use a table with the options you want to change.
-These are the available options and their default values:
+Here are the available options and their default values:
 
 ```lua
 {
+    -- these colors will be used on the neocolumn
+    colors = {
+        normal = "#7d7d7d",     -- the color of the neocolumn
+        error = "#db4b4b",      -- the color of the neocolumn on lines with an error
+        error_near = "#ad6565", -- the color of the neocolumn on lines next to a line with an error
+        error_far = "#957171",  -- the color of the neocolumn on lines 2 lines away from a line with an error
+        warn = "#e0af68",       -- the color of the neocolumn on lines with a warning
+        warn_near = "#af9672",  -- the color of the neocolumn on lines next to a line with a warning
+        warn_far = "#968a78",   -- the color of the neocolumn on lines 2 lines away from a line with a warning
+        info = "#0db9d7",       -- the color of the neocolumn on lines with an info diagnostic
+        info_near = "#459cab",  -- the color of the neocolumn on lines next to a line with an info diagnostic
+        info_far = "#618c94",   -- the color of the neocolumn on lines 2 lines away from a line with an info diagostic
+        hint = "#1abc9c",       -- the color of the neocolumn on lines with a hint diagnostic
+        hint_near = "#4c9d8d",  -- the color of the neocolumn on lines next to a line with a hint diagnostic
+        hint_far = "#648d85",   -- the color of the neocolumn on lines 2 lines away from a line with a hint diagnostic
+        bg = "#303030",         -- the background color of the neocolumn
+        cursor_bg = "#4d4d4d"   -- the background color of the neocolumn on the same line as the cursor
+    }
     -- neocolumn.nvim will be disabled in buffers with these filetypes
     exclude_filetypes = {
         "help",
@@ -69,12 +87,3 @@ These are the available options and their default values:
     max_line_length = 100
 }
 ```
-
-## Highlighting
-
-**neocolumn.nvim** uses the following highlight groups:
-
-* Neocolumn: The neocolumn
-* NeocolumnCursor: The neocolumn on the same line as the cursor
-
-The rest are variants of these used for diagnostics e.g `NeocolumnError`, `NeocolumnCursorWarn`
