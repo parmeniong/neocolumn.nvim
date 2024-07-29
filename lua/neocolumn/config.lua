@@ -25,7 +25,8 @@ M.defaults = {
     diagnostics = true,
     min_diagnostic_severity = vim.diagnostic.severity.HINT,
     max_line_length = 100,
-    character = "│"
+    character = "│",
+    max_distance = 0
 }
 
 function M.set(opts)

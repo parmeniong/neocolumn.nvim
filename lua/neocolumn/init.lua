@@ -53,6 +53,17 @@ function M.setup(opts)
                 return
             end
 
+            local draw_normal = true
+            if config.opts.max_distance ~= 0 then
+                local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+                draw_normal = vim.api.nvim_buf_get_lines(
+                    0,
+                    cursor_line - 1,
+                    cursor_line,
+                    false
+                )[1]:len() >= config.opts.max_line_length - config.opts.max_distance
+            end
+
             local lines_with_diagnostics
             if config.opts.diagnostics then
                 local diagnostics = vim.diagnostic.get(0)
@@ -165,6 +176,11 @@ function M.setup(opts)
                     end
                 end
 
+                local char = config.opts.character
+                if not draw_normal and (hl == "Neocolumn" or hl == "NeocolumnCursor") then
+                    char = " "
+                end
+
                 if not ids[event.buf] then
                     ids[event.buf] = {}
                 end
@@ -172,13 +188,13 @@ function M.setup(opts)
                 if ids[event.buf][i] then
                     ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
                         id = ids[event.buf][i],
-                        virt_text = { { config.opts.character, hl } },
+                        virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
                     })
                 else
                     ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
-                        virt_text = { { config.opts.character, hl } },
+                        virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
                         virt_text_win_col = config.opts.max_line_length
                     })
