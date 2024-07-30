@@ -34,9 +34,6 @@ local function get_neighbouring_diagnostics(line, lines_with_diagnostics)
     if max_severity_diagnostic[1] == math.huge and max_severity_diagnostic[2] == math.huge then
         return nil
     else
-        if line == 10 then
-            print(vim.inspect(max_severity_diagnostic))
-        end
         return max_severity_diagnostic
     end
 end
