@@ -5,8 +5,8 @@ local hex = function(n)
 end
 
 local bg = function(n)
-  local color = vim.api.nvim_get_hl_by_name(n, true)
-  return hex(color.background)
+  local color = vim.api.nvim_get_hl(0, { name = n })
+  return hex(color.bg)
 end
 
 M.defaults = {
