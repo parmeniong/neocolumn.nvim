@@ -1,12 +1,12 @@
 local M = {}
 
-local hex = function(n)
-  return string.format("#%06x", n)
+local function hex(n)
+    return string.format("#%06x", n)
 end
 
-local bg = function(n)
-  local color = vim.api.nvim_get_hl(0, { name = n })
-  return hex(color.bg)
+local function bg(n)
+    local color = vim.api.nvim_get_hl(0, { name = n })
+    return hex(color.bg)
 end
 
 M.defaults = {
@@ -16,8 +16,8 @@ M.defaults = {
         warn = "#e0af68",
         info = "#0db9d7",
         hint = "#1abc9c",
-        bg = bg('Normal'),
-        cursor_bg = bg('CursorLine')
+        bg = bg("Normal"),
+        cursor_bg = bg("CursorLine")
     },
     exclude_filetypes = {
         "help",
