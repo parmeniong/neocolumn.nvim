@@ -79,17 +79,19 @@ function M.setup(opts)
             end
 
             if not DrawNormal[event.buf] then
-                if config.opts.max_distance ~= 0 then
-                    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
-                    DrawNormal[event.buf] = vim.api.nvim_buf_get_lines(
-                        0,
-                        cursor_line - 1,
-                        cursor_line,
-                        false
-                    )[1]:len() >= config.opts.max_line_length - config.opts.max_distance
-                else
-                    DrawNormal[event.buf] = 0
-                end
+                DrawNormal[event.buf] = true
+            end
+
+            if config.opts.max_distance ~= 0 then
+                local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+                DrawNormal[event.buf] = vim.api.nvim_buf_get_lines(
+                    0,
+                    cursor_line - 1,
+                    cursor_line,
+                    false
+                )[1]:len() >= config.opts.max_line_length - config.opts.max_distance
+            else
+                DrawNormal[event.buf] = true
             end
 
             if not LinesWithDiagnostics[event.buf] then
@@ -212,7 +214,7 @@ function M.setup(opts)
                 end
 
                 local char = config.opts.character
-                if not DrawNormal[event.buf] == 0 and
+                if not DrawNormal[event.buf] and
                     (hl == "Neocolumn" or hl == "NeocolumnCursor")
                 then
                     char = " "
