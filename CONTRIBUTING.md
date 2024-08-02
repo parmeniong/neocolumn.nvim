@@ -22,7 +22,6 @@ To make a pull request to add a feature, fix a bug or anything else, follow thes
 1. Fork this repository.
 2. Create a new branch.
 3. Make the changes you want to that branch.
-4. Update the version in the README.md version badge according to the [SemVer](https://semver.org/) standard.
 5. Create a pull request and add any labels that match it.
 
 ### Coding Conventions
