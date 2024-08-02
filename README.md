@@ -22,7 +22,7 @@
 * Diagnostics integration
 * Use custom character as colorcolumn
 * Modern style and look
-* Show colorcolumn only if the current line length is close enough to it
+* Show colorcolumn only if the current line is close to it
 
 ## Installation
 
@@ -84,6 +84,7 @@ Here are the available options and their default values:
     -- The character use as the neocolumn
     character = "│",
     -- The neocolumn will be shown only if the length of the current line is this close to it
+    -- zero will make the neocolumn always visible
     max_distance = 0
 }
 ```
