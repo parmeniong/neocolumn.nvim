@@ -136,35 +136,35 @@ function M.set_colors(colors, ns)
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorErrorNear", {
-        fg = colors.error_near,
+        fg = error_near,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorErrorFar", {
-        fg = colors.error_far,
+        fg = error_far,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorWarnNear", {
-        fg = colors.warn_near,
+        fg = warn_near,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorWarnFar", {
-        fg = colors.warn_far,
+        fg = warn_far,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorInfoNear", {
-        fg = colors.info_near,
+        fg = info_near,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorInfoFar", {
-        fg = colors.info_far,
+        fg = info_far,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorHintNear", {
-        fg = colors.hint_near,
+        fg = hint_near,
         bg = colors.cursor_bg
     })
     vim.api.nvim_set_hl(ns, "NeocolumnCursorHintFar", {
-        fg = colors.hint_far,
+        fg = hint_far,
         bg = colors.cursor_bg
     })
 end
