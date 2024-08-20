@@ -1,14 +1,5 @@
 local M = {}
 
-local function hex(n)
-    return string.format("#%06x", n)
-end
-
-local function bg(n)
-    local color = vim.api.nvim_get_hl(0, { name = n })
-    return hex(color.bg)
-end
-
 M.defaults = {
     colors = {
         normal = "#7d7d7d",
@@ -16,8 +7,8 @@ M.defaults = {
         warn = "#e0af68",
         info = "#0db9d7",
         hint = "#1abc9c",
-        bg = bg("Normal"),
-        cursor_bg = bg("CursorLine")
+        bg = nil,
+        cursor_bg = nil
     },
     exclude_filetypes = {
         "help",

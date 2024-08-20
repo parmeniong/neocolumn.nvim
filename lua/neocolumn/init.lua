@@ -229,13 +229,15 @@ function M.setup(opts)
                         id = Ids[event.buf][i],
                         virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
-                        virt_text_win_col = config.opts.max_line_length
+                        virt_text_win_col = config.opts.max_line_length,
+                        hl_mode = "combine"
                     })
                 else
                     Ids[event.buf][i] = vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
                         virt_text = { { char, hl } },
                         virt_text_pos = "overlay",
-                        virt_text_win_col = config.opts.max_line_length
+                        virt_text_win_col = config.opts.max_line_length,
+                        hl_mode = "combine"
                     })
                 end
 
