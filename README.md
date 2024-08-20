@@ -67,9 +67,11 @@ Here are the available options and their default values:
         warn = "#e0af68",       -- the color of the neocolumn to display warnings
         info = "#0db9d7",       -- the color of the neocolumn info diagnostics
         hint = "#1abc9c",       -- the color of the neocolumn hint diagnostics
-        bg = "#303030",         -- the background color of the neocolumn
-        cursor_bg = "#4d4d4d"   -- the background color of the neocolumn on the same line as the
-                                -- cursor
+        bg = nil,               -- the background color of the neocolumn. Set to nil to use whatever
+                                -- color happens to be behind the neocolumn
+        cursor_bg = nil         -- the background color of the neocolumn on the same line as the
+                                -- cursor. Set to nil to use whatever color happens to be behind the
+                                -- neocolumn
     }
     -- neocolumn.nvim will be disabled in buffers with these filetypes
     exclude_filetypes = {
