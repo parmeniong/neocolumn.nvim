@@ -14,6 +14,9 @@ M.defaults = {
         "help",
         "man"
     },
+    exclude_buftypes = {
+        "terminal"
+    },
     diagnostics = true,
     min_diagnostic_severity = vim.diagnostic.severity.HINT,
     max_line_length = 100,
