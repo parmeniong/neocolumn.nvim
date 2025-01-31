@@ -78,6 +78,10 @@ Here are the available options and their default values:
         "help",
         "man"
     },
+    -- neocolumn.nvim will be disabled in buffers with these buftypes
+    exclude_buftypes = {
+        "terminal"
+    },
     -- When enabled, the neocolumn will be colored depending on each line's diagnostics
     diagnostics = true,
     -- If `diagnostics` is `true` then diagnostic with a severity lower than this will be ignored
