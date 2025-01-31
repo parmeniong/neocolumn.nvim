@@ -64,7 +64,9 @@ function M.setup(opts)
     }, {
         callback = function(event)
             local filetype = vim.bo.filetype
-            if vim.tbl_contains(config.opts.exclude_filetypes, filetype) then
+            local buftype = vim.bo.buftype
+            if vim.tbl_contains(config.opts.exclude_filetypes, filetype)
+                or vim.tbl_contains(config.opts.exclude_buftypes, buftype) then
                 if Ids[event.buf] then
                     for _, id in pairs(Ids[event.buf]) do
                         vim.api.nvim_buf_del_extmark(0, ns, id)
