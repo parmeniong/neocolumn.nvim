@@ -7,6 +7,8 @@
 
 **neocolumn.nvim** is a replacement for Neovim's builtin `colorcolumn`
 
+**Note**: This repository has been archived as the plugin had multiple bugs and I lost interest in maintaining and updating it.
+
 ![sample screenshot](
   https://github.com/user-attachments/assets/5a6bd46b-2aba-4b2e-b599-21ee7b8d8ead
 )
